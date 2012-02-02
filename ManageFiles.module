@@ -9,7 +9,7 @@ class ManageFiles extends Process implements Module {
 	public static function getModuleInfo() {
 		return array(
 			'title' => 'Manage Files', 
-			'version' => '1.05', 
+			'version' => '1.06', 
 			'summary' => 'Let you manage your files more easily',
 			'singular' => true, 
 			'autoload' => false, 
@@ -77,7 +77,7 @@ class ManageFiles extends Process implements Module {
 									// make preview size with configurable module
 									'<a class="fancybox" href="'.$f->url.'"><img src="'.$f->size(100,0)->url.'"/></a>',
 									basename($f->url),
-									round((filesize($this->config->paths->root . $f->url)/1024)/1024,2).' MB',
+									round(($f->get('filesize')/1024)/1024,2).' MB',
 								 	'<a target="blank" href="'.$page->url.'">'.$page->get("title|name").'</a>',
 								 	
 									'<a target="blank" href="'.$f->url.'">Link</a>',
@@ -93,10 +93,12 @@ class ManageFiles extends Process implements Module {
 					
 						if($file){
 							foreach($file as $f) {
+							var_dump($f->url);
 								$table->row(array(
 									'<a class="fancybox_iframe" href="'.$f->url.'">'.basename($f->url).'</a>',
 									basename($f->url),
-									round((filesize($this->config->paths->root . $f->url)/1024)/1024,2).' MB',
+									
+									round(($f->get('filesize')/1024)/1024,2).' MB',
 								 	'<a target="blank" href="'.$page->url.'">'.$page->get("title|name").'</a>',
 								 	
 									'<a target="blank" href="'.$f->url.'">Link</a>',
