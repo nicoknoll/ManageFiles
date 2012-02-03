@@ -9,7 +9,7 @@ class ManageFiles extends Process implements Module {
 	public static function getModuleInfo() {
 		return array(
 			'title' => 'Manage Files', 
-			'version' => '1.06', 
+			'version' => '1.07', 
 			'summary' => 'Let you manage your files more easily',
 			'singular' => true, 
 			'autoload' => false, 
@@ -56,11 +56,12 @@ class ManageFiles extends Process implements Module {
 				}
 			}
 		}
-		// construct selector
-		$seltemplates = "template=".implode( "|" , array_unique($filetemplates) );
-		
+
 		// we get all pages using these templates
-		$pages = $this->pages->find($seltemplates . ", sort=-modified, limit=10");
+
+		$fields = $this->fields->find('type=FieldtypeFile|FieldtypeImage')->getArray();
+		$pages = $this->pages->find(implode('|', $fields) . ">0, sort=-modified, limit=10"); 
+
 
 		if(count($pages)) {
 			
@@ -93,7 +94,6 @@ class ManageFiles extends Process implements Module {
 					
 						if($file){
 							foreach($file as $f) {
-							var_dump($f->url);
 								$table->row(array(
 									'<a class="fancybox_iframe" href="'.$f->url.'">'.basename($f->url).'</a>',
 									basename($f->url),
@@ -164,9 +164,7 @@ _END;
 						if($field == 'InputfieldImage' || $field == 'InputfieldFile') {
 							foreach($f->page->get($field->name) as $file_object) {
 								if((string)$file_object == $f) {
-									echo '<pre>';
-									var_dump((string)$f->page->get($field->name)->delete($file_object));
-									echo '</pre>';
+									$f->page->get($field->name)->delete($file_object);
 								}
 							}
 						}
