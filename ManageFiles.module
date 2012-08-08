@@ -8,9 +8,9 @@ class ManageFiles extends Process implements Module {
 	 */
 	public static function getModuleInfo() {
 		return array(
-			'title' => 'Manage Files', 
-			'version' => '1.07', 
-			'summary' => 'Let you manage your files more easily',
+			'title' => 'Site-wide File Manager', 
+			'version' => '1.08', 
+			'summary' => 'Let you easily manage all of your uploaded files.',
 			'singular' => true, 
 			'autoload' => false, 
 			);
@@ -44,7 +44,7 @@ class ManageFiles extends Process implements Module {
 		$table = $this->modules->get('MarkupAdminDataTable');
 		$table->setSortable(true); 
 		$table->setEncodeEntities(false);
-		$header = array('Preview','Name','Size','on Page','Link','Delete');
+		$header = array('Preview','Name','Size','on Page','Link&emsp;','Delete');
 		$table->headerRow($header);
 		
 		// get all templates that have 1 or more file fields
@@ -77,12 +77,12 @@ class ManageFiles extends Process implements Module {
 								$table->row(array(
 									// make preview size with configurable module
 									'<a class="fancybox" href="'.$f->url.'"><img src="'.$f->size(100,0)->url.'"/></a>',
-									basename($f->url),
-									round(($f->get('filesize')/1024)/1024,2).' MB',
+									basename($f->url).'&emsp;',
+									'<nobr style="text-align:right;float:right;">'.((round(($f->get('filesize')/1024)/1024,2) < 0.01) ? '< 0.01' : round(($f->get('filesize')/1024)/1024,2)).' MB &emsp;</nobr>',
 								 	'<a target="blank" href="'.$page->url.'">'.$page->get("title|name").'</a>',
 								 	
 									'<a target="blank" href="'.$f->url.'">Link</a>',
-									'<input type="checkbox" name="delete[]" value="'.$page->id.'|'.$field->name.'|'.$f->name.'" />'
+									'<input type="checkbox" name="delete[]" style="margin-left:15px;float:left;margin-top:5px;" value="'.$page->id.'|'.$field->name.'|'.$f->name.'" />'
 								));	
 							}
 					
@@ -96,13 +96,13 @@ class ManageFiles extends Process implements Module {
 							foreach($file as $f) {
 								$table->row(array(
 									'<a class="fancybox_iframe" href="'.$f->url.'">'.basename($f->url).'</a>',
-									basename($f->url),
+									basename($f->url).'&emsp;',
 									
-									round(($f->get('filesize')/1024)/1024,2).' MB',
+									'<nobr style="text-align:right;float:right;">'.((round(($f->get('filesize')/1024)/1024,2) < 0.01) ? '< 0.01' : round(($f->get('filesize')/1024)/1024,2)).' MB &emsp;</nobr>',
 								 	'<a target="blank" href="'.$page->url.'">'.$page->get("title|name").'</a>',
 								 	
 									'<a target="blank" href="'.$f->url.'">Link</a>',
-									'<input type="checkbox" name="delete[]" value="'.$page->id.'|'.$field->name.'|'.$f->name.'" />'
+									'<input type="checkbox" name="delete[]" style="margin-left:15px;float:left;margin-top:5px;" value="'.$page->id.'|'.$field->name.'|'.$f->name.'" />'
 								));	
 							}
 					
@@ -123,7 +123,7 @@ class ManageFiles extends Process implements Module {
 		$button = $this->modules->get("InputfieldButton");
 		$button->type = 'submit';
 		$button->id = 'submit_delete';
-		$button->value = 'Remove selected file';
+		$button->value = 'Delete selected file/files';
 		
 		//$table->action(array('Add language' => 'edit/?id=0'));
 		$scripts = <<<_END
@@ -170,7 +170,7 @@ _END;
 						}
 					}
 					$page->save();
-					$this->message('"'.$filename.'" deleted.');
+					$this->message('"'.$filename.'" successfully deleted.');
 				}
 			
 			}
@@ -207,7 +207,6 @@ _END;
 
 		$page = $this->getInstalledPage();
 		$this->message("Installed to {$page->path}"); 
-		if($page->parent->name == 'setup') $this->message("Click to your 'Setup' page to manage your files."); 
 	}
 
 	protected function getInstalledPage() {
@@ -244,7 +243,7 @@ _END;
 	public function ___uninstall() {
 		$page = $this->getInstalledPage();	
 		if($page->id) { 
-			$this->message("Removed {$page->path}");
+			$this->message("Removed {$page->path} successfully.");
 			$this->pages->delete($page); 
 		}
 	}
